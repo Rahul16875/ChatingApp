@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.chatapplication.ChatViewModel
+import com.example.chatapplication.CheckSignedIn
 import com.example.chatapplication.CommonProgressBar
 import com.example.chatapplication.R
 import com.example.chatapplication.navigateTo
@@ -38,6 +39,9 @@ import com.example.chatapplication.navigation.ChatScreen
 @Composable
 fun SignUpScreen(navController: NavController,
                  vm : ChatViewModel){
+
+    CheckSignedIn(vm ,navController )
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier
             .padding(top = 50.dp)
@@ -108,7 +112,6 @@ fun SignUpScreen(navController: NavController,
                 numberState.value.text,
                 emailState.value.text,
                 passwordState.value.text,
-                navController
 
             ) },
                 modifier = Modifier.padding(5.dp)) {
