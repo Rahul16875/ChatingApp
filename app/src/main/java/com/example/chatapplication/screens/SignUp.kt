@@ -33,7 +33,6 @@ import com.example.chatapplication.ChatViewModel
 import com.example.chatapplication.CheckSignedIn
 import com.example.chatapplication.CommonProgressBar
 import com.example.chatapplication.R
-import com.example.chatapplication.navigateTo
 import com.example.chatapplication.navigation.ChatScreen
 
 @Composable

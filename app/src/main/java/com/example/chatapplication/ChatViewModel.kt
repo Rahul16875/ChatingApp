@@ -3,8 +3,6 @@ package com.example.chatapplication
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import com.example.chatapplication.navigation.ChatScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -18,34 +16,67 @@ class ChatViewModel @Inject constructor(
     private var db: FirebaseFirestore
 ): ViewModel()  {
 
+    var signIn = mutableStateOf(false)
+
+     var inProgress = mutableStateOf(false)
+    private val eventMutableState = mutableStateOf<Event<String>?>(null)
+
+    private var userData = mutableStateOf<UserData?>(null)
+
     init {
         val currentUser = auth.currentUser
-//        (currentUser != null).also { this.signIn.value = it }
+        signIn.value = currentUser != null
         currentUser?.uid?.let {
             getUserData(it)
         }
     }
 
-
-
-     var inProgress = mutableStateOf(false)
-    private val eventMutableState = mutableStateOf<Event<String>?>(null)
-    var signIn = mutableStateOf(false)
-    private var userData = mutableStateOf<UserData?>(null)
-
     fun signUp(name: String, number: String, email: String, password: String){
 
         inProgress.value = true
 
-        auth.createUserWithEmailAndPassword(email,password) .addOnCompleteListener{
+//         if we click on sign up even when fields are empty then for notcrashing the app.
+        if (name.isEmpty() or number.isEmpty() or email.isEmpty() or password.isEmpty()){
+            handleException(customMessage = " Please fill all the fields")
+            return
+        }
+        inProgress.value = true
+        db.collection(USER_NODE).whereEqualTo("number",number).get().addOnSuccessListener {
+            if (it.isEmpty){
+                auth.createUserWithEmailAndPassword(email,password) .addOnCompleteListener{
 
-            if (it.isSuccessful){
-                signIn.value = true
-                createOrUpdateProfile(name,number)
+                    if (it.isSuccessful){
+                        signIn.value = true
+                        createOrUpdateProfile(name,number)
 //                navController.navigate(ChatScreen.LoginScreen.name)
+                    }else{
+                        handleException(it.exception, customMessage = "sign up failed")
+                    }
+                }
+
             }else{
-                handleException(it.exception, customMessage = "sign up failed")
+                handleException(customMessage = "Number Already Exists")
+                inProgress.value = false
             }
+        }
+    }
+
+    fun login(email: String, password: String){
+        if (email.isEmpty() or password.isEmpty()){
+            handleException(customMessage = " Please Fill the all Fields")
+            return
+        }else{
+            inProgress.value = true
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener{ it ->
+                    if (it.isSuccessful){
+                        signIn.value = true
+                        inProgress.value = false
+                        auth.currentUser?.uid?.let {
+                            getUserData(it)
+                        }
+                    }
+                }
         }
     }
 

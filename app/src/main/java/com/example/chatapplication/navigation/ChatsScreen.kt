@@ -7,6 +7,7 @@ enum class ChatScreen {
     LoginScreen,
     ChatsScreen,
     ProfileScreen,
+    ChatListScreen,
     StatusScreen,
     SingleChatScreen,
     SingleStatusScreen;
@@ -18,6 +19,7 @@ enum class ChatScreen {
             LoginScreen.name -> LoginScreen
             ChatsScreen.name -> ChatsScreen
             ProfileScreen.name -> ProfileScreen
+            ChatListScreen.name -> ChatListScreen
             else -> throw IllegalArgumentException("Route $route is not recognized")
 
         }

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapplication.ChatViewModel
+import com.example.chatapplication.screens.ChatListScreen
 import com.example.chatapplication.screens.LoginScreen
 import com.example.chatapplication.screens.SignUpScreen
 
@@ -21,7 +22,10 @@ fun ChatNavigation(){
             SignUpScreen(navController = navController,vm)
         }
         composable(ChatScreen.LoginScreen.name){
-            LoginScreen(navController = navController)
+            LoginScreen(navController = navController,vm)
+        }
+        composable(ChatScreen.ChatListScreen.name){
+            ChatListScreen(navController = navController)
         }
     }
 }

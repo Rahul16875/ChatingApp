@@ -16,12 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.chatapplication.navigation.ChatScreen
 
-fun navigateTo(navController: NavController, route: String){
-    navController.navigate(route){
-        popUpTo(route)
-        launchSingleTop = true
-    }
-}
+
 
 @Composable
 fun CommonProgressBar(){
@@ -45,7 +40,7 @@ fun CheckSignedIn(vm: ChatViewModel, navController: NavController){
 
     if (signIn && !alreadySignIn.value){
         alreadySignIn.value = true
-        navController.navigate(ChatScreen.LoginScreen.name){
+        navController.navigate(ChatScreen.ChatListScreen.name){
             popUpTo(0)
         }
 
