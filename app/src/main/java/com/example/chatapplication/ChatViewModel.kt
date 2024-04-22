@@ -1,19 +1,23 @@
 package com.example.chatapplication
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.lang.Exception
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val auth : FirebaseAuth,
-    private var db: FirebaseFirestore
+    private var db: FirebaseFirestore,
+    val storage : FirebaseStorage
 ): ViewModel()  {
 
     var signIn = mutableStateOf(false)
@@ -21,7 +25,7 @@ class ChatViewModel @Inject constructor(
      var inProgress = mutableStateOf(false)
     private val eventMutableState = mutableStateOf<Event<String>?>(null)
 
-    private var userData = mutableStateOf<UserData?>(null)
+    var userData = mutableStateOf<UserData?>(null)
 
     init {
         val currentUser = auth.currentUser
@@ -78,6 +82,32 @@ class ChatViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun uploadProfileImage(uri: Uri){
+        uploadImage(uri){
+            createOrUpdateProfile(imageUrl = it.toString())
+        }
+
+    }
+
+    private fun uploadImage(uri: Uri, onSuccess:(Uri) -> Unit){
+        inProgress.value = true
+        val storageRef = storage.reference
+        val uuid = UUID.randomUUID()
+        val imageRef = storageRef.child("image/$uuid")
+        val uploadTask = imageRef.putFile(uri)
+        uploadTask.addOnSuccessListener {
+
+            val result = it.metadata?.reference?.downloadUrl
+            result?.addOnSuccessListener(onSuccess)
+            inProgress.value = false
+        }
+
+            .addOnFailureListener{
+                handleException(it)
+            }
+
     }
 
      private fun createOrUpdateProfile(name: String?=null, number: String?=null, imageUrl: String?=null) {
